@@ -1,0 +1,121 @@
+<html>
+<head >
+<meta charset="utf-8"/>
+<script type="text/javascript">
+	var map=new Array();
+	var _row=new Array();
+	var _col=new Array();
+	var _block=new Array();
+	var b=new Array();
+	var count;
+	var ssss=0;
+	function judge(row,col,num)
+	{
+		var flag=1;
+		if(_row[num][row]==1)
+			flag=0;
+		if(_col[num][col]==1)
+			flag=0;
+		if(_block[num][parseInt(row/3)][parseInt(col/3)]==1)
+			flag=0;
+		return flag;
+	}
+	function dfs(cur)
+	{
+		if(cur==count)
+			return;
+		_row[map[parseInt(b[cur]/9)][b[cur]%9]][parseInt(b[cur]/9)]=
+		_col[map[parseInt(b[cur]/9)][b[cur]%9]][b[cur]%9]=
+		_block[map[parseInt(b[cur]/9)][b[cur]%9]][parseInt(parseInt(b[cur]/9)/3)][parseInt(b[cur]%9/3)]=false;
+		var flag=0;
+		for(var i=map[parseInt(b[cur]/9)][b[cur]%9]+1;i<10;i++)
+		{
+			if(judge(parseInt(b[cur]/9),b[cur]%9,i))
+			{
+				map[parseInt(b[cur]/9)][b[cur]%9]=i;
+				_row[i][parseInt(b[cur]/9)]=_col[i][b[cur]%9]=_block[i][parseInt(b[cur]/9/3)][parseInt(b[cur]%9/3)]=true;
+				flag=true;
+				break;
+			}
+		}
+		if(flag==false)
+		{
+			map[parseInt(b[cur]/9)][b[cur]%9]=0;
+			dfs(cur-1);
+		}
+		else
+			dfs(cur+1);
+	}
+	function Get_InputValue()
+	{
+		for(var i=0;i<10;i++)
+		{
+			map[i]=new Array();
+			_row[i]=new Array();
+			_col[i]=new Array();
+			_block[i]=new Array();
+			for(var j=0;j<10;j++)
+			{
+				map[i][j]=0;
+				_row[i][j]=0;
+				_col[i][j]=0;
+			}
+			for(var x=0;x<3;x++)
+			{
+				_block[i][x]=new Array();
+				for(var y=0;y<3;y++)
+					_block[i][x][y]=0;
+			}	
+		}
+		var objs=document.getElementsByName("dt_input");
+		for(var i=0;i<9;i++)
+			for(var j=0;j<9;j++)
+				if(objs[i*9+j].value=="")
+					map[i][j]=0;
+				else
+					map[i][j]=parseInt(objs[i*9+j].value);
+		count=0;
+		for(var i=0;i<9;i++)
+		{
+			for(var j=0;j<9;j++)
+			{
+				_row[map[i][j]][i]=1;
+				_col[map[i][j]][j]=1;
+				_block [map[i][j]] [parseInt(i/3)] [parseInt(j/3)]=1;
+				if(map[i][j]==0) 
+					b[count++]=i*9+j;
+			}
+		}
+		dfs(0);
+		var cc="";
+		for(var i=0;i<9;i++)
+		{
+			for(var j=0;j<9;j++)
+				cc+=map[i][j]+" ";
+			cc+="<br/>"
+		}
+		var obj1=document.getElementById("inputValue");
+		obj1.innerHTML=cc;
+	}
+</script>
+</head>
+<body>
+	<div id="input-container" style="margin-top: 20px;padding-bottom:10px;">
+	</div>
+	<script type="text/javascript">
+		var row=9,col=9;
+		var html_content="";
+		for(var i=0;i<row;i++)
+		{
+			for(var j=0;j<col;j++)
+			html_content+="<input type='text' id='"+parseInt(i*row+j)+"' name='dt_input' style='color:green;width:24px;height:24px;font-size:24px'/>"
+		html_content+="<br/>"
+		}
+		var obj1=document.getElementById("input-container");
+		obj1.innerHTML=html_content;
+	</script>
+	<button onclick="Get_InputValue()">start</button>
+	<div id="inputValue" style="margin-top:20px">
+	</div>
+</body>
+</html>
